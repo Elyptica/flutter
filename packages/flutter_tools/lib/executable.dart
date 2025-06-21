@@ -11,7 +11,6 @@ import 'src/base/template.dart';
 import 'src/base/terminal.dart';
 import 'src/base/user_messages.dart';
 import 'src/build_system/build_targets.dart';
-import 'src/build_system/targets/hook_runner_native.dart' show FlutterHookRunnerNative;
 import 'src/cache.dart';
 import 'src/commands/analyze.dart';
 import 'src/commands/assemble.dart';
@@ -49,7 +48,6 @@ import 'src/devtools_launcher.dart';
 import 'src/features.dart';
 import 'src/globals.dart' as globals;
 // Files in `isolated` are intentionally excluded from google3 tooling.
-import 'src/hook_runner.dart' show FlutterHookRunner;
 import 'src/isolated/build_targets.dart';
 import 'src/isolated/mustache_template.dart';
 import 'src/isolated/native_assets/test/native_assets.dart';
@@ -101,17 +99,6 @@ Future<void> main(List<String> args) async {
     userMessages: UserMessages(),
   );
 
-  // Silently add --start-paused if running with -d web-server and --web-experimental-hot-reload,
-  // and --start-paused is not already present. This is to support hot reload in web-server environment.
-  // TODO(yjessy): Remove this workaround once https://github.com/dart-lang/sdk/issues/60688 is resolved.
-
-  if (args.contains('-d') &&
-      args.contains('web-server') &&
-      args.contains('--web-experimental-hot-reload') &&
-      !args.contains('--start-paused')) {
-    args = List<String>.from(args)..add('--start-paused');
-  }
-
   await runner.run(
     args,
     () => generateCommands(verboseHelp: verboseHelp, verbose: verbose),
@@ -119,7 +106,6 @@ Future<void> main(List<String> args) async {
     muteCommandLogging: muteCommandLogging,
     verboseHelp: verboseHelp,
     overrides: <Type, Generator>{
-      FlutterHookRunner: () => FlutterHookRunnerNative(),
       // The web runner is not supported in google3 because it depends
       // on dwds.
       WebRunnerFactory: () => DwdsWebRunnerFactory(),
