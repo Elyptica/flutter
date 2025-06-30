@@ -135,6 +135,8 @@ class BuildBundleCommand extends BuildSubCommand {
       case TargetPlatform.tester:
       case TargetPlatform.web_javascript:
         break;
+      case TargetPlatform.unsupported:
+        TargetPlatform.throwUnsupportedTarget();
     }
 
     final BuildInfo buildInfo = await getBuildInfo();
@@ -145,6 +147,7 @@ class BuildBundleCommand extends BuildSubCommand {
       mainPath: targetFile,
       depfilePath: stringArg('depfile'),
       assetDirPath: stringArg('asset-dir'),
+      buildNativeAssets: false,
     );
     return FlutterCommandResult.success();
   }
